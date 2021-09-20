@@ -3,16 +3,16 @@ import galleryItems from './app.js';
 
 const galleryList = document.querySelector(".js-gallery");
 const galleryMarkup = createGalleryMarkup(galleryItems);
+const modal = document.querySelector(".js-lightbox");
+const bigImage = document.querySelector(".lightbox__image")
 
 galleryList.insertAdjacentHTML('afterbegin', galleryMarkup);
 
 galleryList.addEventListener('click', onImageClick);
 
-// galleryList.addEventListener('click', onOpenModal)
+modal.addEventListener('click', onCloseModal)
 
 //1. Cоздаем разметку, можно через .createElemen, но сейчас вариант через шаблонную строку. И рендерим ее.
-
-// console.log(createGalleryMarkup(galleryItems));
 
 function createGalleryMarkup (images) {
     return images
@@ -33,12 +33,34 @@ function createGalleryMarkup (images) {
     .join('');
 };
 
+//Делегування, отримання великого зображення
+
 function onImageClick(event) {
-    console.log(event.target);
+  window.addEventListener('keydown', onEscDown)
+  event.preventDefault();
+  if (event.target.nodeName !== 'IMG') {
+    return;
+  }
+  
+  modal.classList.add('is-open')
+  bigImage.setAttribute('src', event.target.dataset.source)
 }
 
+//Закриття модального вікна
 
-// function onOpenModal(event) {
-// event.preventDefault();
-//   modalBoxRef.classList.add('is-open')
-// }
+function onCloseModal(event) {
+  window.removeEventListener('keydown', onEscDown)
+  if(event.target.dataset.action !== 'close-lightbox') {
+  return;
+  }
+  modal.classList.remove('is-open')
+  bigImage.removeAttribute('src')
+}
+
+//Закриття модального вікна після натискання клавіші `ESC`.
+
+function onEscDown(e) {
+  if (e.code === 'Escape') {
+    modal.classList.remove('is-open');
+  }
+}
